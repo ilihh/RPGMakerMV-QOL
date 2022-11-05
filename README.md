@@ -6,7 +6,7 @@ enables: debug mode, save always, full drop, experience multiplier,
 and gold multiplier.
 
 **Options:**
-- **Text Typing**: enable/disable text typing. Boolean. Default *true*
+- **Text Typing**: enable/disable text typing. Boolean. Default *false*
 - **Fade Speed**: original speed is 24, 0 is instant, more is slower. Number. Default *1*
 - **Scene Transition**: 0 is instant, more is slower. Number. Default *1*
 - **Debug Window**: enable/disable debug window (F9 to show). Boolean. Default *true*

@@ -1,10 +1,10 @@
 //=============================================================================
-// Quality of life: disables text typing, reduces fade speed and scene transition time, enables debug mode, and other things.
+// Quality of Life: disables text typing, reduces fade speed and scene transition time, enables debug mode, and other things.
 // ilih_qol.js
 //=============================================================================
 
 /*:
- * @plugindesc Quality of life: disables text typing, reduces fade speed and
+ * @plugindesc Quality of Life: disables text typing, reduces fade speed and
  * scene transition time; enables: debug mode, save always, full drop,
  * experience multiplier, and gold multiplier.
  * @author ilih
@@ -86,7 +86,7 @@
  * ============================================================================
  * Introduction
  * ============================================================================
- * Quality of life: disables text typing, reduces fade speed and scene
+ * Quality of Life: disables text typing, reduces fade speed and scene
  * transition time, enables debug mode, and other things.
  * 
  * Free for commercial and non-commercial projects.
