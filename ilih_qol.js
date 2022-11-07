@@ -228,11 +228,11 @@
 
 	let _Game_Enemy_exp = Game_Enemy.prototype.exp;
 	Game_Enemy.prototype.exp = function() {
-		return config.debug_exp_rate * _Game_Enemy_exp(this);
+		return config.debug_exp_rate * _Game_Enemy_exp.call(this);
 	};
 
 	let _Game_Enemy_gold = Game_Enemy.prototype.gold;
 	Game_Enemy.prototype.gold = function() {
-		return config.debug_gold_rate * _Game_Enemy_gold(this);
+		return config.debug_gold_rate * _Game_Enemy_gold.call(this);
 	};
 })();
