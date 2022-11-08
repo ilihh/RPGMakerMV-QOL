@@ -180,14 +180,14 @@
 		return _Scene_Map_isDebugCalled.call(this);
 	};
 
-	let _Game_System_enableMenu = Game_System.prototype.enableMenu;
-	Game_System.prototype.enableMenu = function() {
+	let _Game_System_isMenuEnabled = Game_System.prototype.isMenuEnabled;
+	Game_System.prototype.isMenuEnabled = function() {
 		if (config.debug_menu_always)
 		{
 			return true;
 		}
 
-		return _Game_System_enableMenu.call(this);
+		return _Game_System_isMenuEnabled.call(this);
 	};
 
 	let _Window_MenuCommand_needsCommand = Window_MenuCommand.prototype.needsCommand;
