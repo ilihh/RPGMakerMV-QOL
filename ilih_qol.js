@@ -29,6 +29,13 @@
  * Default: 1
  * @default 1
  *
+ * @param Volume Step
+ * @parent ---Debug---
+ * @type number
+ * @desc Volume Step (default is 20).
+ * Default: 5
+ * @default 5
+ *
  * @param ---Debug---
  * @default
  *
@@ -113,6 +120,8 @@
 			this.debug_full_drop = parameters['Full Drop'] === 'true';
 			this.debug_exp_rate = parseInt(parameters['Experience Multiplier']);
 			this.debug_gold_rate = parseInt(parameters['Gold Multiplier']);
+
+			this.volume_step = parseInt(parameters['Volume Step']);
 		}
 
 		toString()
@@ -128,6 +137,7 @@
 			msg += 'Full Drop: ' + config.debug_full_drop + '\n';
 			msg += 'Exp Rate: ' + config.debug_exp_rate + '\n';
 			msg += 'Gold Rate: ' + config.debug_gold_rate + '\n';
+			msg += 'Volume Step: ' + config.volume_step + '\n';
 
 			return msg;
 		}
@@ -135,7 +145,7 @@
 
 	const config = new QualityOfLife(PluginManager.parameters('ilih_qol'));
 
-	let _Window_Message_updateShowFast = Window_Message.prototype.updateShowFast;
+	const _Window_Message_updateShowFast = Window_Message.prototype.updateShowFast;
 	Window_Message.prototype.updateShowFast = function() {
 		_Window_Message_updateShowFast.call(this);
 
@@ -145,12 +155,12 @@
 		}
 	};
 
-	let _Game_Interpreter_fadeSpeed = Game_Interpreter.prototype.fadeSpeed;
+	const _Game_Interpreter_fadeSpeed = Game_Interpreter.prototype.fadeSpeed;
 	Game_Interpreter.prototype.fadeSpeed = function() {
 		return config.fade_speed;
 	};
 
-	let _Scene_Base_startFadeIn = Scene_Base.prototype.startFadeIn;
+	const _Scene_Base_startFadeIn = Scene_Base.prototype.startFadeIn;
 	Scene_Base.prototype.startFadeIn = function(duration, white) {
 		if (config.scene_transition === 0)
 		{
@@ -160,7 +170,7 @@
 		_Scene_Base_startFadeIn.call(this, duration, white);
 	};
 
-	let _Scene_Base_startFadeOut = Scene_Base.prototype.startFadeOut;
+	const _Scene_Base_startFadeOut = Scene_Base.prototype.startFadeOut;
 	Scene_Base.prototype.startFadeOut = function(duration, white) {
 		if (config.scene_transition === 0)
 		{
@@ -170,7 +180,7 @@
 		_Scene_Base_startFadeOut.call(this, duration, white);
 	};
 
-	let _Scene_Map_isDebugCalled = Scene_Map.prototype.isDebugCalled;
+	const _Scene_Map_isDebugCalled = Scene_Map.prototype.isDebugCalled;
 	Scene_Map.prototype.isDebugCalled = function() {
 		if (config.debug_mode)
 		{
@@ -180,7 +190,7 @@
 		return _Scene_Map_isDebugCalled.call(this);
 	};
 
-	let _Game_System_isMenuEnabled = Game_System.prototype.isMenuEnabled;
+	const _Game_System_isMenuEnabled = Game_System.prototype.isMenuEnabled;
 	Game_System.prototype.isMenuEnabled = function() {
 		if (config.debug_menu_always)
 		{
@@ -190,7 +200,7 @@
 		return _Game_System_isMenuEnabled.call(this);
 	};
 
-	let _Window_MenuCommand_needsCommand = Window_MenuCommand.prototype.needsCommand;
+	const _Window_MenuCommand_needsCommand = Window_MenuCommand.prototype.needsCommand;
 	Window_MenuCommand.prototype.needsCommand = function(name) {
 		if (config.debug_save_always && (name === 'save'))
 		{
@@ -200,7 +210,7 @@
 		return _Window_MenuCommand_needsCommand.call(this, name);
 	};
 
-	let _Game_System_isSaveEnabled = Game_System.prototype.isSaveEnabled;
+	const _Game_System_isSaveEnabled = Game_System.prototype.isSaveEnabled;
 	Game_System.prototype.isSaveEnabled = function() {
 		if (config.debug_save_always)
 		{
@@ -210,7 +220,7 @@
 		return _Game_System_isSaveEnabled.call(this);
 	};
 
-	let _Game_Enemy_makeDropItems = Game_Enemy.prototype.makeDropItems;
+	const _Game_Enemy_makeDropItems = Game_Enemy.prototype.makeDropItems;
 	Game_Enemy.prototype.makeDropItems = function() {
 		if (config.debug_full_drop)
 		{
@@ -226,13 +236,18 @@
 		return _Game_Enemy_makeDropItems.call(this);
 	};
 
-	let _Game_Enemy_exp = Game_Enemy.prototype.exp;
+	const _Game_Enemy_exp = Game_Enemy.prototype.exp;
 	Game_Enemy.prototype.exp = function() {
 		return config.debug_exp_rate * _Game_Enemy_exp.call(this);
 	};
 
-	let _Game_Enemy_gold = Game_Enemy.prototype.gold;
+	const _Game_Enemy_gold = Game_Enemy.prototype.gold;
 	Game_Enemy.prototype.gold = function() {
 		return config.debug_gold_rate * _Game_Enemy_gold.call(this);
+	};
+
+	const _Window_Options_volumeOffset = Window_Options.prototype.volumeOffset;
+	Window_Options.prototype.volumeOffset = function () {
+		return config.volume_step;
 	};
 })();
