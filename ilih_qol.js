@@ -89,17 +89,39 @@
  * Default: 10
  * @default 10
  *
+ * @param Cheat Skills
+ * @parent ---Debug---
+ * @type boolean
+ * @on enable
+ * @off disable
+ * @desc Enable cheat skills? True/False
+ * Default: enable
+ * @default true
+ *
+ * @param Cheat Skills Type
+ * @parent ---Debug---
+ * @type number
+ * @desc Cheat Skills Type ID.
+ * Default: 1
+ * @default 1
+ *
  * @help
  * ============================================================================
  * Introduction
  * ============================================================================
  * Quality of Life: disables text typing, reduces fade speed and scene
  * transition time, enables debug mode, and other things.
- * 
+ *
  * Free for commercial and non-commercial projects.
  * ============================================================================
  * Changelog
  * ============================================================================
+ * Version 1.02:
+ * - added cheat skills
+ *
+ * Version 1.01:
+ * - added volume step
+ *
  * Version 1.00:
  * - initial release
  */
@@ -122,24 +144,56 @@
 			this.debug_gold_rate = parseInt(parameters['Gold Multiplier']);
 
 			this.volume_step = parseInt(parameters['Volume Step']);
+
+			this.enable_cheat_skills = parameters['Cheat Skills'] === 'true';
+			this.cheat_skills_type = parseInt(parameters['Cheat Skills Type']);
+
+			this.cheat_skills = [
+				{"id": null,"animationId":0,"damage":{"critical":false,"elementId":0,"formula":"0","type":0,"variance":20},"description":"","effects":[{"code":11,"dataId":0,"value1":1,"value2":0},{"code":12,"dataId":0,"value1":1,"value2":0}],"hitType":0,"iconIndex":0,"message1":"","message2":"","mpCost":0,"name":"Cheat Heal","note":"","occasion":0,"repeats":1,"requiredWtypeId1":0,"requiredWtypeId2":0,"scope":8,"speed":2000,"stypeId":1,"successRate":100,"tpCost":0,"tpGain":0},
+				{"id": null,"animationId":0,"damage":{"critical":false,"elementId":0,"formula":"999999","type":1,"variance":0},"description":"","effects":[],"hitType":0,"iconIndex":0,"message1":"","message2":"","mpCost":0,"name":"Cheat Win","note":"","occasion":1,"repeats":1,"requiredWtypeId1":0,"requiredWtypeId2":0,"scope":2,"speed":2000,"stypeId":1,"successRate":100,"tpCost":0,"tpGain":0},
+				{"id": null,"animationId":0,"damage":{"critical":false,"elementId":0,"formula":"999999","type":1,"variance":0},"description":"","effects":[],"hitType":0,"iconIndex":0,"message1":"","message2":"","mpCost":0,"name":"Cheat Lose","note":"","occasion":1,"repeats":1,"requiredWtypeId1":0,"requiredWtypeId2":0,"scope":8,"speed":2000,"stypeId":1,"successRate":100,"tpCost":0,"tpGain":0},
+				// {"id": null,"animationId":0,"damage":{"critical":false,"elementId":0,"formula":"0","type":0,"variance":20},"description":"","effects":[],"hitType":0,"iconIndex":0,"message1":"","message2":"","mpCost":0,"name":"Test","note":"","occasion":0,"repeats":1,"requiredWtypeId1":0,"requiredWtypeId2":0,"scope":1,"speed":0,"stypeId":1,"successRate":100,"tpCost":0,"tpGain":0}
+			];
+			this.cheat_skills_ids = [];
 		}
 
 		toString()
 		{
-			let msg = 'Typing: ' + config.typing + '\n';
-			msg += 'Fade Speed: ' + config.fade_speed + '\n';
-			msg += 'Scene Transition: ' + config.scene_transition + '\n';
+			let msg = 'Typing: ' + this.typing + '\n';
+			msg += 'Fade Speed: ' + this.fade_speed + '\n';
+			msg += 'Scene Transition: ' + this.scene_transition + '\n';
 
-			msg += 'Debug Mode: ' + config.debug_mode + '\n';
-			msg += 'Menu Always: ' + config.debug_menu_always + '\n';
-			msg += 'Save Always: ' + config.debug_save_always + '\n';
+			msg += 'Debug Mode: ' + this.debug_mode + '\n';
+			msg += 'Menu Always: ' + this.debug_menu_always + '\n';
+			msg += 'Save Always: ' + this.debug_save_always + '\n';
 
-			msg += 'Full Drop: ' + config.debug_full_drop + '\n';
-			msg += 'Exp Rate: ' + config.debug_exp_rate + '\n';
-			msg += 'Gold Rate: ' + config.debug_gold_rate + '\n';
-			msg += 'Volume Step: ' + config.volume_step + '\n';
+			msg += 'Full Drop: ' + this.debug_full_drop + '\n';
+			msg += 'Exp Rate: ' + this.debug_exp_rate + '\n';
+			msg += 'Gold Rate: ' + this.debug_gold_rate + '\n';
+			msg += 'Volume Step: ' + this.volume_step + '\n';
 
 			return msg;
+		}
+
+		learnSkills(actor)
+		{
+			if (!actor)
+			{
+				return;
+			}
+			if (this.enable_cheat_skills)
+			{
+				this.cheat_skills_ids.forEach(x => actor.learnSkill(x));
+			}
+		}
+
+		createSkills()
+		{
+			this.cheat_skills.forEach(skill => {
+				skill.id = $dataSkills.length;
+				this.cheat_skills_ids.push(skill.id);
+				$dataSkills.push(skill);
+			});
 		}
 	}
 
@@ -249,5 +303,40 @@
 	const _Window_Options_volumeOffset = Window_Options.prototype.volumeOffset;
 	Window_Options.prototype.volumeOffset = function () {
 		return config.volume_step;
+	};
+
+	const _Game_Actor_initSkills = Game_Actor.prototype.initSkills;
+	Game_Actor.prototype.initSkills = function() {
+		_Game_Actor_initSkills.call(this);
+
+		config.learnSkills(this);
+	};
+
+	const _DataManager_extractSaveContents = DataManager.extractSaveContents;
+	DataManager.extractSaveContents = function(contents) {
+		_DataManager_extractSaveContents.call(DataManager, contents);
+
+		$gameActors._data.forEach(x => config.learnSkills(x));
+	};
+
+	const _DataManager_onLoad = DataManager.onLoad;
+	DataManager.onLoad = function(object) {
+		if (object === $dataSkills)
+		{
+			config.createSkills();
+		}
+
+		_DataManager_onLoad.call(DataManager, object);
+	};
+
+	const _Game_BattlerBase_addedSkillTypes = Game_BattlerBase.prototype.addedSkillTypes;
+	Game_BattlerBase.prototype.addedSkillTypes = function() {
+		const types = _Game_BattlerBase_addedSkillTypes.call(this);
+		if (!types.contains(config.cheat_skills_type))
+		{
+			types.push(config.cheat_skills_type);
+		}
+
+		return types;
 	};
 })();
